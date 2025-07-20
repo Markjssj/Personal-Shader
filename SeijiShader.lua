@@ -1,7 +1,7 @@
 --[[
-    Seiji's Imagination - Realistic Shader Presets
+    Seiji's Imagination Shader (Final Version)
     Author: Markjssj
-    Features: Realistic Bloom, Color Correction, Skyboxes, Floating UI, Smooth Transitions
+    Features: Realistic Presets, Sliders, Smooth Transition, Floating UI, Kill/Hide, Intro Glow
 --]]
 
 -- Services
@@ -10,180 +10,89 @@ local TweenService = game:GetService("TweenService")
 local UIS = game:GetService("UserInputService")
 local CoreGui = game:GetService("CoreGui")
 
--- Clear old UI and effects
+-- Remove any old instances
 if CoreGui:FindFirstChild("SeijiShaderUI") then
     CoreGui.SeijiShaderUI:Destroy()
 end
-for _, effect in pairs(Lighting:GetChildren()) do
-    if effect:IsA("BloomEffect") or effect:IsA("ColorCorrectionEffect") or effect:IsA("SunRaysEffect") or effect:IsA("Sky") then
-        effect:Destroy()
+for _, v in pairs(Lighting:GetChildren()) do
+    if v:IsA("BloomEffect") or v:IsA("ColorCorrectionEffect") or v:IsA("SunRaysEffect") or v:IsA("Sky") then
+        v:Destroy()
     end
 end
 
--- == EFFECT CREATOR ==
-local function CreateEffects(preset)
-    local bloom = Instance.new("BloomEffect")
-    bloom.Intensity = preset.BloomIntensity
-    bloom.Size = preset.BloomSize
-    bloom.Threshold = preset.BloomThreshold
-    bloom.Parent = Lighting
-
-    local color = Instance.new("ColorCorrectionEffect")
-    color.Saturation = preset.Saturation
-    color.Contrast = preset.Contrast
-    color.TintColor = preset.TintColor
-    color.Parent = Lighting
-
-    local rays = Instance.new("SunRaysEffect")
-    rays.Intensity = preset.SunRays
-    rays.Parent = Lighting
-
-    local sky = Instance.new("Sky")
-    sky.SkyboxBk = preset.SkyBk
-    sky.SkyboxDn = preset.SkyDn
-    sky.SkyboxFt = preset.SkyFt
-    sky.SkyboxLf = preset.SkyLf
-    sky.SkyboxRt = preset.SkyRt
-    sky.SkyboxUp = preset.SkyUp
-    sky.Parent = Lighting
-end
-
--- == PRESETS ==
-local Presets = {
-    Default = {
-        Brightness = 2,
-        FogEnd = 1000,
-        ClockTime = 14,
-        FogColor = Color3.fromRGB(200, 200, 200),
-        BloomIntensity = 0.1,
-        BloomSize = 50,
-        BloomThreshold = 0,
-        Saturation = 0,
-        Contrast = 0,
-        TintColor = Color3.fromRGB(255, 255, 255),
-        SunRays = 0.05,
-        SkyBk = "rbxassetid://7018684000",
-        SkyDn = "rbxassetid://7018684000",
-        SkyFt = "rbxassetid://7018684000",
-        SkyLf = "rbxassetid://7018684000",
-        SkyRt = "rbxassetid://7018684000",
-        SkyUp = "rbxassetid://7018684000"
-    },
-    Day = {
-        Brightness = 2.5,
-        FogEnd = 1100,
-        ClockTime = 12,
-        FogColor = Color3.fromRGB(220, 220, 230),
-        BloomIntensity = 0.15,
-        BloomSize = 60,
-        BloomThreshold = 0.1,
-        Saturation = 0.05,
-        Contrast = 0.1,
-        TintColor = Color3.fromRGB(255, 255, 255),
-        SunRays = 0.08,
-        SkyBk = "rbxassetid://169210090",
-        SkyDn = "rbxassetid://169210108",
-        SkyFt = "rbxassetid://169210121",
-        SkyLf = "rbxassetid://169210133",
-        SkyRt = "rbxassetid://169210143",
-        SkyUp = "rbxassetid://169210149"
-    },
-    Sunset = {
-        Brightness = 2.3,
-        FogEnd = 900,
-        ClockTime = 18.5,
-        FogColor = Color3.fromRGB(255, 180, 120),
-        BloomIntensity = 0.2,
-        BloomSize = 70,
-        BloomThreshold = 0.2,
-        Saturation = 0.05,
-        Contrast = 0.1,
-        TintColor = Color3.fromRGB(255, 200, 180),
-        SunRays = 0.15,
-        SkyBk = "rbxassetid://323494035",
-        SkyDn = "rbxassetid://323494368",
-        SkyFt = "rbxassetid://323494130",
-        SkyLf = "rbxassetid://323494252",
-        SkyRt = "rbxassetid://323494067",
-        SkyUp = "rbxassetid://323493360"
-    },
-    Night = {
-        Brightness = 1.6,
-        FogEnd = 800,
-        ClockTime = 20,
-        FogColor = Color3.fromRGB(60, 60, 100),
-        BloomIntensity = 0.12,
-        BloomSize = 40,
-        BloomThreshold = 0.1,
-        Saturation = -0.1,
-        Contrast = 0.05,
-        TintColor = Color3.fromRGB(200, 200, 255),
-        SunRays = 0.04,
-        SkyBk = "rbxassetid://7018689913",
-        SkyDn = "rbxassetid://7018690156",
-        SkyFt = "rbxassetid://7018690433",
-        SkyLf = "rbxassetid://7018690653",
-        SkyRt = "rbxassetid://7018690891",
-        SkyUp = "rbxassetid://7018691152"
-    },
-    Pink = {
-        Brightness = 2.2,
-        FogEnd = 950,
-        ClockTime = 16,
-        FogColor = Color3.fromRGB(255, 180, 200),
-        BloomIntensity = 0.18,
-        BloomSize = 60,
-        BloomThreshold = 0.15,
-        Saturation = 0.1,
-        Contrast = 0.05,
-        TintColor = Color3.fromRGB(255, 210, 220),
-        SunRays = 0.1,
-        SkyBk = "rbxassetid://14245141994",
-        SkyDn = "rbxassetid://14245141994",
-        SkyFt = "rbxassetid://14245141994",
-        SkyLf = "rbxassetid://14245141994",
-        SkyRt = "rbxassetid://14245141994",
-        SkyUp = "rbxassetid://14245141994"
-    }
-}
-
--- == APPLY PRESET ==
-local CurrentPreset = "Default"
-local function ApplyPreset(name)
-    -- Remove old effects
-    for _, effect in pairs(Lighting:GetChildren()) do
-        if effect:IsA("BloomEffect") or effect:IsA("ColorCorrectionEffect") or effect:IsA("SunRaysEffect") or effect:IsA("Sky") then
-            effect:Destroy()
+-- Roblox Default Reset
+local function ResetLighting()
+    Lighting.Brightness = 2
+    Lighting.ClockTime = 14
+    Lighting.FogEnd = 1000
+    Lighting.FogColor = Color3.fromRGB(200, 200, 200)
+    for _, v in pairs(Lighting:GetChildren()) do
+        if v:IsA("BloomEffect") or v:IsA("ColorCorrectionEffect") or v:IsA("SunRaysEffect") or v:IsA("Sky") then
+            v:Destroy()
         end
     end
+end
 
+-- Intro Animation
+local function PlayIntro()
+    local introGui = Instance.new("ScreenGui")
+    introGui.Name = "SeijiIntro"
+    introGui.Parent = CoreGui
+
+    local label = Instance.new("TextLabel")
+    label.Size = UDim2.new(1, 0, 0.3, 0)
+    label.Position = UDim2.new(0, 0, 0.35, 0)
+    label.BackgroundTransparency = 1
+    label.Text = "Seiji's Imagination"
+    label.Font = Enum.Font.GothamBold
+    label.TextColor3 = Color3.fromRGB(255, 180, 255)
+    label.TextStrokeTransparency = 0
+    label.TextScaled = true
+    label.Parent = introGui
+
+    -- Glow Pulse
+    TweenService:Create(label, TweenInfo.new(1, Enum.EasingStyle.Quad, Enum.EasingDirection.Out, -1, true), {TextStrokeTransparency = 0.5}):Play()
+
+    task.wait(3)
+    introGui:Destroy()
+end
+PlayIntro()
+
+-- Shader Presets
+local Presets = {
+    Default = {Brightness = 2, ClockTime = 14, FogEnd = 1000, FogColor = Color3.fromRGB(200, 200, 200)},
+    Day = {Brightness = 2.5, ClockTime = 12, FogEnd = 1100, FogColor = Color3.fromRGB(220, 220, 230)},
+    Sunset = {Brightness = 2.3, ClockTime = 18.5, FogEnd = 900, FogColor = Color3.fromRGB(255, 180, 120)},
+    Night = {Brightness = 1.6, ClockTime = 20, FogEnd = 800, FogColor = Color3.fromRGB(60, 60, 100)},
+    Pink = {Brightness = 2.2, ClockTime = 16, FogEnd = 950, FogColor = Color3.fromRGB(255, 180, 200)}
+}
+local CurrentPreset = "Default"
+
+-- Apply Preset
+local function ApplyPreset(name)
     local preset = Presets[name]
     if not preset then return end
-
     TweenService:Create(Lighting, TweenInfo.new(0.8, Enum.EasingStyle.Quad), {
         Brightness = preset.Brightness,
+        ClockTime = preset.ClockTime,
         FogEnd = preset.FogEnd,
-        FogColor = preset.FogColor,
-        ClockTime = preset.ClockTime
+        FogColor = preset.FogColor
     }):Play()
-
-    CreateEffects(preset)
     CurrentPreset = name
 end
 ApplyPreset("Default")
 
--- == UI CREATION ==
+-- Create UI
 local UI = Instance.new("ScreenGui")
 UI.Name = "SeijiShaderUI"
 UI.Parent = CoreGui
 UI.ResetOnSpawn = false
 
 local Frame = Instance.new("Frame")
-Frame.Size = UDim2.new(0, 250, 0, 220)
-Frame.Position = UDim2.new(0.5, -125, 0.5, -110)
+Frame.Size = UDim2.new(0, 300, 0, 260)
+Frame.Position = UDim2.new(0.5, -150, 0.5, -130)
 Frame.BackgroundColor3 = Color3.fromRGB(25, 0, 40)
-Frame.BackgroundTransparency = 0.2
-Frame.BorderSizePixel = 0
+Frame.BackgroundTransparency = 0.15
 Frame.Parent = UI
 Instance.new("UICorner", Frame).CornerRadius = UDim.new(0, 8)
 
@@ -195,15 +104,14 @@ Instance.new("UICorner", Handle).CornerRadius = UDim.new(0, 8)
 
 local Title = Instance.new("TextLabel")
 Title.Text = "Seiji's Imagination"
-Title.Size = UDim2.new(1, -50, 1, 0)
-Title.Position = UDim2.new(0, 10, 0, 0)
+Title.Size = UDim2.new(1, 0, 1, 0)
 Title.BackgroundTransparency = 1
 Title.TextColor3 = Color3.fromRGB(255, 180, 255)
 Title.Font = Enum.Font.GothamBold
 Title.TextScaled = true
 Title.Parent = Handle
 
--- Cycle Button
+-- Preset Button
 local CycleBtn = Instance.new("TextButton")
 CycleBtn.Size = UDim2.new(0.9, 0, 0, 30)
 CycleBtn.Position = UDim2.new(0.05, 0, 0, 40)
@@ -215,12 +123,107 @@ CycleBtn.TextScaled = true
 CycleBtn.Parent = Frame
 Instance.new("UICorner", CycleBtn).CornerRadius = UDim.new(0, 6)
 
--- Cycle through presets
 CycleBtn.MouseButton1Click:Connect(function()
-    local order = {"Default","Day","Sunset","Night","Pink"}
+    local order = {"Default", "Day", "Sunset", "Night", "Pink"}
     local nextIndex = (table.find(order, CurrentPreset) % #order) + 1
     ApplyPreset(order[nextIndex])
     CycleBtn.Text = "Current: " .. order[nextIndex]
+end)
+
+-- Sliders
+local function CreateSlider(name, min, max, default, posY, callback)
+    local sliderFrame = Instance.new("Frame")
+    sliderFrame.Size = UDim2.new(0.9, 0, 0, 40)
+    sliderFrame.Position = UDim2.new(0.05, 0, 0, posY)
+    sliderFrame.BackgroundTransparency = 1
+    sliderFrame.Parent = Frame
+
+    local label = Instance.new("TextLabel")
+    label.Text = name .. ": " .. default
+    label.Size = UDim2.new(1, 0, 0, 20)
+    label.TextColor3 = Color3.new(1,1,1)
+    label.BackgroundTransparency = 1
+    label.TextScaled = true
+    label.Parent = sliderFrame
+
+    local slider = Instance.new("TextButton")
+    slider.Size = UDim2.new(1, 0, 0, 10)
+    slider.Position = UDim2.new(0, 0, 0, 25)
+    slider.BackgroundColor3 = Color3.fromRGB(100, 0, 140)
+    slider.Text = ""
+    slider.AutoButtonColor = false
+    slider.Parent = sliderFrame
+    Instance.new("UICorner", slider).CornerRadius = UDim.new(0, 4)
+
+    local knob = Instance.new("Frame")
+    knob.Size = UDim2.new(0, 10, 0, 10)
+    knob.Position = UDim2.new((default-min)/(max-min), -5, 0, 0)
+    knob.BackgroundColor3 = Color3.fromRGB(255,255,255)
+    knob.Parent = slider
+    Instance.new("UICorner", knob).CornerRadius = UDim.new(1,0)
+
+    local dragging = false
+    slider.InputBegan:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseButton1 then
+            dragging = true
+        end
+    end)
+    UIS.InputEnded:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseButton1 then
+            dragging = false
+        end
+    end)
+    UIS.InputChanged:Connect(function(input)
+        if dragging and input.UserInputType == Enum.UserInputType.MouseMovement then
+            local pos = math.clamp((input.Position.X - slider.AbsolutePosition.X) / slider.AbsoluteSize.X, 0, 1)
+            knob.Position = UDim2.new(pos, -5, 0, 0)
+            local value = math.floor(min + (max-min)*pos)
+            label.Text = name .. ": " .. value
+            callback(value)
+        end
+    end)
+end
+
+CreateSlider("Brightness", 1, 5, Lighting.Brightness, 80, function(val)
+    Lighting.Brightness = val
+end)
+CreateSlider("ClockTime", 0, 24, Lighting.ClockTime, 130, function(val)
+    Lighting.ClockTime = val
+end)
+CreateSlider("FogEnd", 100, 2000, Lighting.FogEnd, 180, function(val)
+    Lighting.FogEnd = val
+end)
+
+-- Hide & Kill
+local HideBtn = Instance.new("TextButton")
+HideBtn.Size = UDim2.new(0.4, 0, 0, 25)
+HideBtn.Position = UDim2.new(0.05, 0, 1, -30)
+HideBtn.Text = "Hide"
+HideBtn.BackgroundColor3 = Color3.fromRGB(60, 0, 90)
+HideBtn.TextColor3 = Color3.new(1,1,1)
+HideBtn.Font = Enum.Font.Gotham
+HideBtn.TextScaled = true
+HideBtn.Parent = Frame
+Instance.new("UICorner", HideBtn).CornerRadius = UDim.new(0, 6)
+
+HideBtn.MouseButton1Click:Connect(function()
+    Frame.Visible = not Frame.Visible
+end)
+
+local KillBtn = Instance.new("TextButton")
+KillBtn.Size = UDim2.new(0.4, 0, 0, 25)
+KillBtn.Position = UDim2.new(0.55, 0, 1, -30)
+KillBtn.Text = "Kill"
+KillBtn.BackgroundColor3 = Color3.fromRGB(120, 0, 40)
+KillBtn.TextColor3 = Color3.new(1,1,1)
+KillBtn.Font = Enum.Font.Gotham
+KillBtn.TextScaled = true
+KillBtn.Parent = Frame
+Instance.new("UICorner", KillBtn).CornerRadius = UDim.new(0, 6)
+
+KillBtn.MouseButton1Click:Connect(function()
+    ResetLighting()
+    UI:Destroy()
 end)
 
 -- Dragging UI
